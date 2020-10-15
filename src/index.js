@@ -184,7 +184,7 @@ function main() {
 	// loadDraco('model/draco/alocasia_s.drc');
 	// loadGLTF('model/glb/Flamingo.glb', [-2, 2, 1], [0.01, 0.01, 0.01]);
 	/// 
-	/*
+	
 	loadGLTF('model/gltf/capoeira/Capoeira.gltf', [1, 0, 0], [0.01, 0.01, 0.01]).then(function(gltff){
 		console.log('termine gltf!');
 		mixerCap = new THREE.AnimationMixer( gltff.scene );
@@ -194,7 +194,7 @@ function main() {
 	}).catch(function (err) {
 		console.log(err);
 		
-	});
+	});/*
     loadGLTFF('model/gltf/GLTFMATCAP/scene.gltf', [1, 0, 0], [0.5, 0.5, 0.5]).then(function(gltf){
 		console.log('termine gltf!');
 		mixerCap = new THREE.AnimationMixer( gltf.scene );
@@ -203,7 +203,7 @@ function main() {
 		
 	}).catch(function (err) {
 		console.log(err);
-	});/*/
+	});/*
 	loadGLTFF('model/gltf/miguelangelo/scene.gltf', [1, 0, 0], [0.5, 0.5, 0.5]).then(function(gltf){
 		console.log('termine gltf!');
 		mixerCap = new THREE.AnimationMixer( gltf.scene );
@@ -212,7 +212,7 @@ function main() {
 		
 	}).catch(function (err) {
 		console.log(err);
-	});/*
+	});/**/ 
 	loadFBX('model/fbx/avatar1.fbx', [2, 0, -1], [0.01, 0.01, 0.01]).then(function(obj1){
 		// console.log('termine!');
 		mixer = new THREE.AnimationMixer( obj1 );
