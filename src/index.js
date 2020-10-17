@@ -40,7 +40,10 @@ var mixer, mixer2,mixerCap;
 //Lights
 var spotLight, light, hemisLight;
 var spotLightHelper;
+//Skybox
 var materiall;
+var Skybox;
+var video=[];
 //Interface
 var gui;
 var obj;
@@ -221,7 +224,19 @@ function main() {
 		
 	})
 	//*/
-     /*****************************START ADDED CODE***************/
+	 /*****************************START ADDED CODE***************/
+	 
+	 //create video
+	 for (let index = 0; index < 3; index++) {
+		 video[index]= document.createElement('video');
+		 video[index].load();
+		 video[index].autoplay= true;
+		 video[index].needsUpdate= true;
+		 video[index].loop	= true;
+		
+	 }
+	 
+	 
         var floorTexture = new THREE.TextureLoader().load( 'images/checkerboard.jpg' )
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 	floorTexture.repeat.set( 10, 10 );
@@ -243,11 +258,11 @@ function main() {
 	engine= new ParticleEngine();
 	engine.setValues(Examples.fountain);
 	engine.initialize(scene);
-	
-	addSkybox();
+	addSkybox(0,false);
 	addGUI();
 	addGUIFirework();
 	addGUISkybox();
+	addGUIChooseSkybox ();
      /*****************************FINISH ADDED CODE**************/
 	
 	
@@ -270,20 +285,36 @@ function main() {
 	
 
 }
-function addSkybox(){//Create animated sky
+function addSkybox(num,	isnotfirsttime){//Create animated sky
 
-	//create video
-	var video= document.createElement('video');
-	video.load();
-	video.autoplay= true;
-	video.needsUpdate= true;
-	video.loop	= true;
-	//choose the video
-	video.src	= "images/Sky.mp4";
-	//video.src	= "images/Lluvia.mp4";
-	//video.src	= "images/Amanecer.mp4";
 	
-	var texture = new THREE.VideoTexture( video );
+	var texture;
+	
+	//choose the video
+	if (num== 0){
+		video[2].src	= "images/Lluvia.mp4";
+		video[0].src	= "images/Sky.mp4";
+		video[0].autoplay= true;	
+		video[2].autoplay= true;
+		 texture = new THREE.VideoTexture( video[0] );
+	} 
+	if (num== 1){
+		video[1].autoplay= true;
+		video[2].autoplay= true;
+		video[2].src	= "images/Sky.mp4"; 
+		video[1].src	= "images/Lluvia.mp4";
+		 texture = new THREE.VideoTexture( video[1] );
+	} 
+	if (num==2){
+		video[2].autoplay= true;
+		video[2].src	= "images/Amanecer.mp4";
+		 texture = new THREE.VideoTexture( video[2] );
+		 
+	} 
+	
+	
+	
+	
 
     var skyGeo;
     //add sphere
@@ -299,8 +330,12 @@ function addSkybox(){//Create animated sky
     metalness: 1,
     map: texture,
 
-    } );
-	var Skybox = new THREE.Mesh(skyGeo, materiall);
+	} );
+	if (isnotfirsttime){
+		scene.remove( Skybox );
+	}
+	
+	 Skybox = new THREE.Mesh(skyGeo, materiall);
 	// put the video both sides of the sphere
 	Skybox.material.side = THREE.DoubleSide;
 	//Skybox.Side = THREE.DoubleSide;
@@ -347,6 +382,21 @@ function addGUIFirework (){
 	guiALLF.add( parameters, 'rain'       ).name("Rain");
 	guiALLF.add( parameters, 'snow'       ).name("Snow");
 	guiALLF.add( parameters, 'firework'   ).name("Firework");
+}
+
+function addGUIChooseSkybox (){
+	var parameters = 
+   {
+	   blueSky:   function() { addSkybox( 0 , true  ); },
+	   rain:   function() { addSkybox( 1 , true  ); },		
+	   sunrise:   function() { addSkybox( 2 , true  ); }	
+	
+   };
+   var guiALLF= gui.addFolder('Choose Sky');
+   guiALLF.add( parameters, 'blueSky'   ).name("BlueSky");
+   guiALLF.add( parameters, 'rain'   ).name("Rainning");
+   guiALLF.add( parameters, 'sunrise'   ).name("Sunrise");
+
 }
      /*****************************FINISH ADDED CODE**************/
 function loadFBX(path,pos,scale) {
