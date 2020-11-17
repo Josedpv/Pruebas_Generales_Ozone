@@ -48,8 +48,15 @@ var video=[];
 var gui;
 var obj;
 var stats;
-var childd;
+var childd=[];
 var childdd;
+//DownLoader
+var INTERSECTED = null;
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2( Infinity, Infinity );
+const group = [];
+var Gltf_number=0;
+var indexmodel=0;
 function init() 
 {
 	
@@ -173,7 +180,7 @@ function main() {
     renderer.gammaFactor = 2.2;
    // renderer.shadowMap.enabled = true;
 //	renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-	
+document.body.appendChild( renderer.domElement );
 	//Camera
 	camera.position.x = 14;
 	camera.position.y = 2;
@@ -188,41 +195,68 @@ function main() {
 	// loadGLTF('model/glb/Flamingo.glb', [-2, 2, 1], [0.01, 0.01, 0.01]);
 	/// 
 	
+	
 	loadGLTF('model/gltf/capoeira/Capoeira.gltf', [1, 0, 0], [0.01, 0.01, 0.01]).then(function(gltff){
 		console.log('termine gltf!');
-		mixerCap = new THREE.AnimationMixer( gltff.scene );
+		//mixerCap = new THREE.AnimationMixer( gltff.scene );
 		var action = mixerCap.clipAction( gltff.animations[ 0 ] );
-		action.play();
+		//action.play();
+		//childd[0]=gltff.;// Downloader
+		
+	//	group[0]= gltff.scene.children[0];
+	//	group[0].position.copy(position);
 		
 	}).catch(function (err) {
 		console.log(err);
 		
-	});/*
-    loadGLTFF('model/gltf/GLTFMATCAP/scene.gltf', [1, 0, 0], [0.5, 0.5, 0.5]).then(function(gltf){
+	});
+	
+	Gltf_number=1;
+
+    loadGLTF('model/gltf/GLTFMATCAP/scene.gltf', [10, 0, 0], [0.1, 0.1, 0.1]).then(function(gltf){
 		console.log('termine gltf!');
-		mixerCap = new THREE.AnimationMixer( gltf.scene );
-		var action = mixerCap.clipAction( gltf.animations[ 0 ] );
-		action.play();
-		
+		//childd[Gltf_number]=gltf;// Downloader
+		//group.add(  gltf.scene );
+		//	group[1]= gltf.scene.children[0];
+	//	group[1].position.copy(position);
 	}).catch(function (err) {
 		console.log(err);
-	});/*
-	loadGLTFF('model/gltf/miguelangelo/scene.gltf', [1, 0, 0], [0.5, 0.5, 0.5]).then(function(gltf){
+	});
+	
+	Gltf_number=2;
+	
+
+	loadGLTF('model/gltf/miguelangelo/scene.gltf', [-10, 0, 0], [0.1, 0.1, 0.1]).then(function(gltf){
 		console.log('termine gltf!');
-		mixerCap = new THREE.AnimationMixer( gltf.scene );
-		var action = mixerCap.clipAction( gltf.animations[ 0 ] );
-		action.play();
-		
+		//childd[Gltf_number]=gltf;// Downloader
+		//group.add(  gltf.scene );
+		//group[2]= gltf.scene.children[0];
+		//group[2].position.copy(position);
 	}).catch(function (err) {
 		console.log(err);
-	});/**/ 
+	});
+	
+	Gltf_number=3;	/**/
+
+
 	loadFBX('model/fbx/avatar1.fbx', [2, 0, -1], [0.01, 0.01, 0.01]).then(function(obj1){
 		// console.log('termine!');
-		mixer = new THREE.AnimationMixer( obj1 );
-		var action = mixer.clipAction( obj1.animations[ 0 ] );
-		action.play();
+		//mixer = new THREE.AnimationMixer( obj1 );
+	//	var action = mixer.clipAction( obj1.animations[ 0 ] );
+		//action.play();
+	//	childd[3]=obj1;// Downloader
+		// Downloader
+			
+		//group.add( obj1 );// Downloader
+			
+		//group.add( childd[2] );// Downloader
 		
+		//group.add( childd[3] );// Downloader
+		//group[4]= obj1.scene.children[0];
+		//group[4].position.copy(position);
 	})
+	
+	loadModels();
 	//*/
 	 /*****************************START ADDED CODE***************/
 	 
@@ -253,19 +287,19 @@ function main() {
 
 
 	
-	
+	//scene.add( group );
 
-	engine= new ParticleEngine();
-	engine.setValues(Examples.fountain);
-	engine.initialize(scene);
-	addSkybox(0,false);
-	addGUI();
-	addGUIFirework();
-	addGUISkybox();
-	addGUIChooseSkybox ();
+	//engine= new ParticleEngine();
+	//engine.setValues(Examples.fountain);
+	//engine.initialize(scene);
+	//addSkybox(0,false);
+//	addGUI();
+	//addGUIFirework();
+	//addGUISkybox();
+//	addGUIChooseSkybox ();
      /*****************************FINISH ADDED CODE**************/
-	
-	
+	 renderer.domElement.addEventListener( 'mousemove', onMouseMove );// Downloader
+	 renderer.domElement.addEventListener( 'click', onMouseClick );
 }
  /*****************************START ADDED CODE***************/
         function addGUISkybox(){//Create animated sky
@@ -341,6 +375,7 @@ function addSkybox(num,	isnotfirsttime){//Create animated sky
 	//Skybox.Side = THREE.DoubleSide;
 	//add sky
 	scene.add(Skybox);
+	
 }
      /*****************************FINISH ADDED CODE**************/
 
@@ -356,32 +391,17 @@ function restartEngine(parameters)
  /*****************************START ADDED CODE***************/
         
 function addGUIFirework (){
+	
+	stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+	document.body.appendChild( stats.dom );
 	 var parameters = 
 	{
-		fountain:   function() { restartEngine( Examples.fountain   ); },
-		startunnel: function() { restartEngine( Examples.startunnel ); },		
-		starfield:  function() { restartEngine( Examples.starfield  ); },		
-		fireflies:  function() { restartEngine( Examples.fireflies  ); },		
-		clouds:     function() { restartEngine( Examples.clouds     ); },		
-		smoke:      function() { restartEngine( Examples.smoke      ); },		
-		fireball:   function() { restartEngine( Examples.fireball   ); },		
-		candle:     function() { restartEngine( Examples.candle     ); },		
-		rain:       function() { restartEngine( Examples.rain       ); },		
-		snow:       function() { restartEngine( Examples.snow       ); },		
-		firework:   function() { restartEngine( Examples.firework   ); }		
+		Downloader:   function() { download_image(); },
+			
 	};
-	var guiALLF= gui.addFolder('FireWorks');
-	guiALLF.add( parameters, 'fountain'   ).name("Star Fountain");
-	guiALLF.add( parameters, 'startunnel' ).name("Star Tunnel");
-	guiALLF.add( parameters, 'starfield'  ).name("Star Field");
-	guiALLF.add( parameters, 'fireflies'  ).name("Fireflies");
-	guiALLF.add( parameters, 'clouds'     ).name("Clouds");
-	guiALLF.add( parameters, 'smoke'      ).name("Smoke");
-	guiALLF.add( parameters, 'fireball'   ).name("Fireball");
-	guiALLF.add( parameters, 'candle'     ).name("Candle");
-	guiALLF.add( parameters, 'rain'       ).name("Rain");
-	guiALLF.add( parameters, 'snow'       ).name("Snow");
-	guiALLF.add( parameters, 'firework'   ).name("Firework");
+	var guiALLF= gui.addFolder('File');
+	guiALLF.add( parameters, 'Downloader'   ).name("Download");
+
 }
 
 function addGUIChooseSkybox (){
@@ -413,8 +433,10 @@ function loadFBX(path,pos,scale) {
 					child.castShadow = true;
 					child.receiveShadow = true;
 				}
+				//childd[Gltf_number]=child;// Downloader
 			} );
 			scene.add( object );
+			//childd[Gltf_number]=object;// Downloader
 			console.log(object);
 			if (object == null) {
 				reject();
@@ -425,6 +447,8 @@ function loadFBX(path,pos,scale) {
 		} );
 		
 	})
+	
+
 	return promise;
 }
 
@@ -439,7 +463,7 @@ function loadGLTF(path, pos,scale) {
 		// dracoLoader.setDecoderPath( '/examples/js/libs/draco/' );
 		dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 		loader.setDRACOLoader( dracoLoader );
-	
+		
 		// Load a glTF resource
 		loader.load(
 			// resource URL
@@ -451,13 +475,23 @@ function loadGLTF(path, pos,scale) {
 				gltf.scene.position.set(pos[0], pos[1], pos[2]);
 				gltf.scene.castShadow = true;
 				gltf.scene.receiveShadow = true;
+				
 				gltf.scene.traverse( function ( child ) {
 					if ( child.isMesh ) {
 						child.castShadow = true;
 						child.receiveShadow = true;
+						
+					
+
 					}
+					//childd[Gltf_number]=child;// Downloader
 				} );
+			
+				//group.add(  gltf.scene );
 				scene.add( gltf.scene );
+				//group.add(  gltf.scene );
+				group[Gltf_number]=gltf.scene.children[0];
+				group[Gltf_number].position.copy(position);
 				console.log(gltf);
 				
 				gltf.animations; // Array<THREE.AnimationClip>
@@ -484,73 +518,7 @@ function loadGLTF(path, pos,scale) {
 	});
 }
  /*****************************START ADDED CODE***************/
-        
-function loadGLTFF(path, pos,scale) {
-	
-	return new Promise((resolve, reject)=>{
-
-		// Instantiate a loader
-		var loader = new GLTFLoader();
-	
-		// Optional: Provide a DRACOLoader instance to decode compressed mesh data
-		var dracoLoader = new DRACOLoader();
-		// dracoLoader.setDecoderPath( '/examples/js/libs/draco/' );
-		dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-		loader.setDRACOLoader( dracoLoader );
-	
-		// Load a glTF resource
-		loader.load(
-			// resource URL
-			path,
-			// called when the resource is loaded
-			function ( gltf ) {
-				//Transformations
-				gltf.scene.scale.set(scale[0], scale[1], scale[2]);
-				gltf.scene.position.set(pos[0], pos[1], pos[2]);
-				gltf.scene.castShadow = true;
-				gltf.scene.receiveShadow = true;
-				gltf.scene.traverse( function ( child ) {
-					
-					if ( child.isMesh ) {
-						child.castShadow = true;
-						child.receiveShadow = true;
-					}
-					if(child instanceof THREE.Mesh){
-						
-						child.material.emissive;//= new THREE.Color( 0xfff);
-						child.material.emissiveIntensity ;console.log(child.material);
-						
-						
-					}childdd=child;
-				} );
-				scene.add( gltf.scene );
-				childd=gltf.scene;
-				console.log(gltf);
-				addGUIGLTF();
-				gltf.animations; // Array<THREE.AnimationClip>
-				gltf.scene; // THREE.Group
-				gltf.scenes; // Array<THREE.Group>
-				gltf.cameras; // Array<THREE.Camera>
-				gltf.asset; // Object
-
-				
-				resolve(gltf);
-	
-			},
-			// called while loading is progressing
-			function ( xhr ) {
-	
-				console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-	
-			},
-			// called when loading has errors
-			function ( error ) {
-	
-				console.log( 'An error happened' );
-				reject(error);
-			});	
-	});
-}
+      
 function addGUIGLTF(){//Create animated sky
 	
 	
@@ -568,6 +536,7 @@ function addGUIGLTF(){//Create animated sky
 				
 				
 				child.material.emissiveIntensity = val;
+				
 			}
 		});
 	}).name('Intensity');
@@ -667,6 +636,11 @@ function displayWindowSize(){
 	// camera.fov = Math.atan(window.innerHeight / 2 / camera.position.z) * 2 * THREE.Math.RAD2DEG;
 	camera.aspect = w / h;
 	camera.updateProjectionMatrix();
+	
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+
 }
 
 // Attaching the event listener function to window's resize event
@@ -690,12 +664,14 @@ function animate()
 	
    */
   requestAnimationFrame(animate);
+  
+  raycast();
   render();
   renderer.render(scene, camera);
   controls.update();
   stats.update();
   var dt = clock.getDelta();
-  engine.update( dt * 0.5);	
+  //engine.update( dt * 0.5);	
   //controls.update();
 }
 
@@ -710,7 +686,140 @@ function render()
 	
 	
 }
+//------------------------------------------------------------download
+function raycast() {
+      
+	raycaster.setFromCamera( mouse, camera );
+	for (let indexmodel = 0; indexmodel < 3; indexmodel++) {
+  var intersects = raycaster.intersectObjects( group[indexmodel] , true);
+  
+		  if ( intersects.length > 0 ) {
+  
+			  if ( INTERSECTED != intersects[ 1 ].object ) {
+	
+				  if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+	  
+				  INTERSECTED = intersects[ 1 ].object;
+				  INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+				  INTERSECTED.material.color.setHex( 0xd4d4d4 );
+	  
+			  }
+	
+		  } else {
+  
+			  if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+	
+			  INTERSECTED = null;
+	
+		  }
+		  //if(indexmodel==2){indexmodel=0;}
+	}
 
+}
+function onMouseMove( event ) {
+      
+	event.preventDefault();
+  
+		  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+}
+
+function onMouseClick( event ) {
+
+	if ( INTERSECTED !== null ){	var link = document.createElement('a');
+	link.download = "Lluvia.mp4";
+	link.href = "images/Lluvia.mp4";
+	link.click();
+}
+
+}
+function download_image(){
+	//	var file = new File(["aa"], "dek_iv.txt");
+	//	file.
+	//var canvas = document.getElementById("canvas");
+	// var image = canvas.toDataURL("images/Lluvia.mp4");//.replace("image/png", "/images/lava.jpg");
+	var link = document.createElement('a');
+	link.download = "Lluvia.mp4";
+	link.href = "images/Lluvia.mp4";
+	link.click();
+
+
+	}
+	  
+function loadModels() {
+
+	const loader = new GLTFLoader();
+	const onLoad = (gltf, position,path,name) => {
+	
+	  const model = gltf.scene.children[0];
+	  model.position.copy(position);
+	  const animation = gltf.animations[0];
+	  const mixer = new THREE.AnimationMixer(model);
+	 // mixers.push(mixer);
+	 // const action = mixer.clipAction(animation);
+	//  action.play();
+	  scene.add(model);
+
+	  var link = document.createElement('a');
+	  link.download = name;
+	  link.href = path;
+	  
+  
+	  function clicked( event ) {
+	  
+		  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		raycaster.setFromCamera( mouse, camera );
+	  
+		  var intersects = raycaster.intersectObject(model, true);
+	  
+		console.log(intersects.length)
+  
+		if (intersects.length > 0) {
+			
+		
+
+		 
+		  link.click();
+		} else {
+		
+  
+		  INTERSECTED = null;
+		}
+	  }
+  
+	  renderer.domElement.addEventListener('click', function(event) {
+		// find intersections
+  
+		clicked(event);
+		//camera.updateMatrixWorld();
+  
+  
+	  });
+  
+	};
+  
+  
+	const onProgress = () => {};
+  
+  
+	const onError = (errorMessage) => {
+	  console.log(errorMessage);
+	};
+  
+  
+	const parrotPosition = new THREE.Vector3(0, 0, 150);
+	loader.load('https://threejs.org/examples/models/gltf/Parrot.glb', gltf => onLoad(gltf, parrotPosition, "images/Lluvia.mp4","Lluvia.mp4"), onProgress, onError);
+  
+	const flamingoPosition = new THREE.Vector3(7.5, 0, 200);
+	loader.load('https://threejs.org/examples/models/gltf/Flamingo.glb', gltf => onLoad(gltf, flamingoPosition,"images/Sky.mp4","Sky.mp4"), onProgress, onError);
+  
+	const storkPosition = new THREE.Vector3(0, -2.5, 0);
+	loader.load('https://threejs.org/examples/models/gltf/Stork.glb', gltf => onLoad(gltf, storkPosition,"images/Amanecer.mp4", "Amanecer.mp4"), onProgress, onError);
+  
+  }
+  
 init();
 main();
 animate();
